@@ -47,7 +47,3 @@ This repo uses [Conventional Commits](https://www.conventionalcommits.org):
 | `chore:` / `docs:` | None | `chore: update dependencies` |
 
 The release workflow automatically determines the version bump from commits merged into `main`.
-
-## License
-
-[Elastic License 2.0](https://www.elastic.co/licensing/elastic-license) — free to use and self-host.
