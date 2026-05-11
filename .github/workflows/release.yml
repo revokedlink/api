@@ -31,19 +31,26 @@ jobs:
           echo "tag=$TAG" >> $GITHUB_OUTPUT
           echo "Latest tag: $TAG"
 
-      - name: Determine version bump
-        id: bump
-        run: |
-          LATEST=${{ steps.latest_tag.outputs.tag }}
-          COMMITS=$(git log ${LATEST}..HEAD --pretty=format:"%s" 2>/dev/null || git log --pretty=format:"%s")
-          
-          BUMP="patch"
-          if echo "$COMMITS" | grep -qiE "^breaking(\(.+\))?!?:"; then
-            BUMP="major"
-          elif echo "$COMMITS" | grep -qiE "^feat(\(.+\))?:"; then
-            BUMP="minor"
-          fi
-          echo "bump=$BUMP" >> $GITHUB_OUTPUT
+          - name: Determine version bump
+              id: bump
+              run: |
+                LATEST=${{ steps.latest_tag.outputs.tag }}
+                
+                if git rev-parse "$LATEST" >/dev/null 2>&1; then
+                  RANGE="${LATEST}..HEAD"
+                else
+                  RANGE="HEAD"
+                fi
+                
+                COMMITS=$(git log $RANGE --pretty=format:"%s")
+                
+                BUMP="patch"
+                if echo "$COMMITS" | grep -qiE "^breaking(\(.+\))?!?:"; then
+                  BUMP="major"
+                elif echo "$COMMITS" | grep -qiE "^feat(\(.+\))?:"; then
+                  BUMP="minor"
+                fi
+                echo "bump=$BUMP" >> $GITHUB_OUTPUT
 
       - name: Calculate new version
         id: version
