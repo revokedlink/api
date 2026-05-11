@@ -1,3 +1,11 @@
+## v0.0.1 (2026-05-11)
+
+### 🐛 Bug Fixes
+- fixed indentation
+- fixed missing tag error
+
+---
+
 # Changelog
 
 All notable changes to the `revoked` API are documented here.
