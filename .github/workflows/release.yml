@@ -31,26 +31,28 @@ jobs:
           echo "tag=$TAG" >> $GITHUB_OUTPUT
           echo "Latest tag: $TAG"
 
-          - name: Determine version bump
-              id: bump
-              run: |
-                LATEST=${{ steps.latest_tag.outputs.tag }}
-                
-                if git rev-parse "$LATEST" >/dev/null 2>&1; then
-                  RANGE="${LATEST}..HEAD"
-                else
-                  RANGE="HEAD"
-                fi
-                
-                COMMITS=$(git log $RANGE --pretty=format:"%s")
-                
-                BUMP="patch"
-                if echo "$COMMITS" | grep -qiE "^breaking(\(.+\))?!?:"; then
-                  BUMP="major"
-                elif echo "$COMMITS" | grep -qiE "^feat(\(.+\))?:"; then
-                  BUMP="minor"
-                fi
-                echo "bump=$BUMP" >> $GITHUB_OUTPUT
+      - name: Determine version bump
+        id: bump
+        run: |
+          LATEST=${{ steps.latest_tag.outputs.tag }}
+          
+          # Range safety for first run
+          if git rev-parse "$LATEST" >/dev/null 2>&1; then
+            RANGE="${LATEST}..HEAD"
+          else
+            RANGE="HEAD"
+          fi
+          
+          COMMITS=$(git log $RANGE --pretty=format:"%s")
+          
+          BUMP="patch"
+          if echo "$COMMITS" | grep -qiE "^breaking(\(.+\))?!?:"; then
+            BUMP="major"
+          elif echo "$COMMITS" | grep -qiE "^feat(\(.+\))?:"; then
+            BUMP="minor"
+          fi
+          echo "bump=$BUMP" >> $GITHUB_OUTPUT
+          echo "Bump level: $BUMP"
 
       - name: Calculate new version
         id: version
@@ -65,7 +67,7 @@ jobs:
           
           if [ "$BUMP" = "major" ]; then
             if [ "$MAJOR" -eq 0 ]; then
-              # stay in 0.x.x range
+              # DEV GUARD: Stay in 0.x.x range for breaking changes
               MINOR=$((MINOR + 1)); PATCH=0
             else
               MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0
@@ -78,6 +80,7 @@ jobs:
           
           NEW_VERSION="v${MAJOR}.${MINOR}.${PATCH}"
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "New version: $NEW_VERSION"
 
       - name: Generate changelog
         id: changelog
@@ -86,10 +89,16 @@ jobs:
           NEW=${{ steps.version.outputs.new_version }}
           DATE=$(date +%Y-%m-%d)
           
+          if git rev-parse "$LATEST" >/dev/null 2>&1; then
+            RANGE="${LATEST}..HEAD"
+          else
+            RANGE="HEAD"
+          fi
+          
           echo "## ${NEW} (${DATE})" > NEW_ENTRY.md
           echo "" >> NEW_ENTRY.md
           
-          git log ${LATEST}..HEAD --pretty=format:"- %s" > all_commits.txt
+          git log $RANGE --pretty=format:"- %s" > all_commits.txt
           
           if grep -qiE "^- breaking" all_commits.txt; then
             echo "### ⚠️ Breaking Changes" >> NEW_ENTRY.md
