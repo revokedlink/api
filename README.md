@@ -2,6 +2,9 @@
 
 The backend API for [revoked](https://revoked.link), built with Go and PocketBase.
 
+> [!WARNING]
+> **Project Status:** `revoked` is currently in active development. It is **not ready for production use**, and backwards compatibility is not guaranteed until the v1.0.0 release.
+
 ## Development
 
 ```bash
