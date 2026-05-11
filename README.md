@@ -28,10 +28,12 @@ go run main.go serve --http="0.0.0.0:7744"
 
 ## Branching
 
-| Branch | Purpose |
-|--------|---------|
-| `main` | Production — protected, triggers releases |
-| `dev`  | Active development |
+| Branch       | Purpose                                   |
+|--------------|-------------------------------------------|
+| `main`       | Production — protected, triggers releases |
+| `dev`        | Active development                        |
+| `pr-${NAME}` | Active development for pull requests      |'
+
 
 All work happens on `dev` or feature branches. Open a PR into `dev` when ready to release.
 
