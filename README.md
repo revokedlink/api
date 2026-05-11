@@ -9,7 +9,7 @@
 [![API Docs](https://img.shields.io/badge/docs-revoked.link%2Fdocs-green)](https://revokedlink.github.io/docs)
 [![Status: Experimental](https://img.shields.io/badge/status-experimental-yellow)](https://github.com/revokedlink/api)
 </div>  
-
+ 
 The backend API for [revoked](https://revoked.link), built with Go and PocketBase.
 
 > [!WARNING]
