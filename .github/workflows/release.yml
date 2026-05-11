@@ -31,38 +31,19 @@ jobs:
           echo "tag=$TAG" >> $GITHUB_OUTPUT
           echo "Latest tag: $TAG"
 
-      - name: Determine version bump
-        id: bump
-        run: |
-          LATEST=${{ steps.latest_tag.outputs.tag }}
-          # Get all commits since last tag
-          COMMITS=$(git log ${LATEST}..HEAD --pretty=format:"%s" 2>/dev/null || git log --pretty=format:"%s")
-
-          BUMP="patch"
-          if echo "$COMMITS" | grep -qiE "^breaking(\(.+\))?!?:"; then
-            BUMP="major"
-          elif echo "$COMMITS" | grep -qiE "^feat(\(.+\))?:"; then
-            BUMP="minor"
-          fi
-
-          echo "bump=$BUMP" >> $GITHUB_OUTPUT
-          echo "Version bump: $BUMP"
-
           - name: Calculate new version
               id: version
               run: |
                 LATEST=${{ steps.latest_tag.outputs.tag }}
                 BUMP=${{ steps.bump.outputs.bump }}
                 
-                # Strip leading v
                 VERSION=${LATEST#v}
-                MAJOR=$(echo $VERSION | cut -d. -f1)
-                MINOR=$(echo $VERSION | cut -d. -f2)
-                PATCH=$(echo $VERSION | cut -d. -f3)
+                MAJOR=$(echo $VERSION | cut -d. -f1 || echo 0)
+                MINOR=$(echo $VERSION | cut -d. -f2 || echo 0)
+                PATCH=$(echo $VERSION | cut -d. -f3 || echo 0)
                 
                 if [ "$BUMP" = "major" ]; then
                   if [ "$MAJOR" -eq 0 ]; then
-                    # PRE-v1.0 GUARD: 
                     MINOR=$((MINOR + 1)); PATCH=0
                   else
                     MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0
@@ -76,27 +57,41 @@ jobs:
                 NEW_VERSION="v${MAJOR}.${MINOR}.${PATCH}"
                 echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
                 echo "New version: $NEW_VERSION"
-
-      - name: Generate changelog
-        id: changelog
-        run: |
-          LATEST=${{ steps.latest_tag.outputs.tag }}
-          NEW=${{ steps.version.outputs.new_version }}
-          DATE=$(date +%Y-%m-%d)
-
-          BREAKING=$(git log ${LATEST}..HEAD --pretty=format:"- %s" | grep -iE "^- breaking" || true)
-          FEATURES=$(git log ${LATEST}..HEAD --pretty=format:"- %s" | grep -iE "^- feat" || true)
-          FIXES=$(git log ${LATEST}..HEAD --pretty=format:"- %s" | grep -iE "^- fix" || true)
-          CHORES=$(git log ${LATEST}..HEAD --pretty=format:"- %s" | grep -iE "^- (chore|docs|refactor)" || true)
-
-          ENTRY="## ${NEW} (${DATE})\n"
-          [ -n "$BREAKING" ] && ENTRY="${ENTRY}\n### ⚠️ Breaking Changes\n${BREAKING}\n"
-          [ -n "$FEATURES" ] && ENTRY="${ENTRY}\n### ✨ Features\n${FEATURES}\n"
-          [ -n "$FIXES" ]    && ENTRY="${ENTRY}\n### 🐛 Bug Fixes\n${FIXES}\n"
-          [ -n "$CHORES" ]   && ENTRY="${ENTRY}\n### 🔧 Maintenance\n${CHORES}\n"
-
-          # Prepend to CHANGELOG.md
-          echo -e "${ENTRY}\n---\n" | cat - CHANGELOG.md > /tmp/CHANGELOG.md && mv /tmp/CHANGELOG.md CHANGELOG.md
+        
+              - name: Generate changelog
+                id: changelog
+                run: |
+                  LATEST=${{ steps.latest_tag.outputs.tag } Bryan}
+                  NEW=${{ steps.version.outputs.new_version }}
+                  DATE=$(date +%Y-%m-%d)
+        
+                  echo "## ${NEW} (${DATE})" > NEW_ENTRY.md
+                  echo "" >> NEW_ENTRY.md
+        
+                  git log ${LATEST}..HEAD --pretty=format:"- %s" > all_commits.txt
+        
+                  if grep -qiE "^- breaking" all_commits.txt; then
+                    echo "### ⚠️ Breaking Changes" >> NEW_ENTRY.md
+                    grep -iE "^- breaking" all_commits.txt >> NEW_ENTRY.md
+                    echo "" >> NEW_ENTRY.md
+                  fi
+        
+                  if grep -qiE "^- feat" all_commits.txt; then
+                    echo "### ✨ Features" >> NEW_ENTRY.md
+                    grep -iE "^- feat" all_commits.txt >> NEW_ENTRY.md
+                    echo "" >> NEW_ENTRY.md
+                  fi
+        
+                  if grep -qiE "^- fix" all_commits.txt; then
+                    echo "### 🐛 Bug Fixes" >> NEW_ENTRY.md
+                    grep -iE "^- fix" all_commits.txt >> NEW_ENTRY.md
+                    echo "" >> NEW_ENTRY.md
+                  fi
+        
+                  touch CHANGELOG.md
+                  echo -e "---\n" >> NEW_ENTRY.md
+                  cat NEW_ENTRY.md CHANGELOG.md > temp_changelog.md
+                  mv temp_changelog.md CHANGELOG.md
 
       - name: Commit changelog & tag
         run: |
