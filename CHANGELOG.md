@@ -1,3 +1,12 @@
+## v0.0.1 (2026-05-12)
+
+### 🐛 Bug Fixes
+- fix: actions bump
+- fixed indentation
+- fixed missing tag error
+
+---
+
 ## v0.0.10 (2026-05-11)
 
 ### 🐛 Bug Fixes
