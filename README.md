@@ -1,7 +1,6 @@
 # revoked — API
  
 <div align="center">
-  <img src="https://github.com/revokedlink/.github/blob/62cf38b3e792c2cfb8f37ad842be2b5192ef8d06/assets/logo-dark.png?raw=true" alt="revoked" width="120" />
   <h1>revoked</h1>
   <p>Self-host freely. Build on top. Don't sell it.</p>  
 
