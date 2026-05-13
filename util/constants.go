@@ -12,9 +12,18 @@ const (
 	TypePersonal = "personal"
 	TypeBusiness = "business"
 
+	TypeText   = "text"
+	TypeNumber = "number"
+
+	FormatHidden  = "hidden"
+	FormatDefault = "default"
+
 	ADMIN    = "dev@dev.com"
 	PASSWORD = "dev@dev.com"
 )
 
 var WorkspaceRoles = []string{RoleAdmin, RoleMember}
 var WorkspaceTypes = []string{TypePersonal, TypeBusiness}
+
+var RecordTypes = []string{TypeText, TypeNumber}
+var RecordFormats = []string{FormatHidden, FormatDefault}

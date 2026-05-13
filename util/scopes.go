@@ -1,6 +1,11 @@
 package util
 
 const (
+	ScopeRecordRead   = "record:read"
+	ScopeRecordCreate = "record:create"
+	ScopeRecordUpdate = "record:update"
+	ScopeRecordDelete = "record:delete"
+
 	ScopeDocumentsRead   = "documents:read"
 	ScopeDocumentsCreate = "documents:create"
 	ScopeDocumentsUpdate = "documents:update"
