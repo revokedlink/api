@@ -10,12 +10,26 @@ import (
 
 // PBClient wraps httpexpect to provide PocketBase-specific, declarative methods
 type PBClient struct {
-	E *httpexpect.Expect
+	E       *httpexpect.Expect
+	baseURL string
+	t       *testing.T
 }
 
 func NewPBClient(t *testing.T, baseURL string) *PBClient {
 	return &PBClient{
-		E: NewExpect(t, baseURL),
+		E:       NewExpect(t, baseURL),
+		baseURL: baseURL,
+		t:       t,
+	}
+}
+
+// T returns a new PBClient scoped to the provided testing.T instance.
+// This is essential for correct output attribution in subtests (t.Run).
+func (c *PBClient) T(t *testing.T) *PBClient {
+	return &PBClient{
+		E:       NewExpect(t, c.baseURL),
+		baseURL: c.baseURL,
+		t:       t,
 	}
 }
 
@@ -77,7 +91,7 @@ func (c *PBClient) AssertStatus(req *httpexpect.Request, expected int) *httpexpe
 		isPBQuirk := expected == http.StatusForbidden && (actual == http.StatusBadRequest || actual == http.StatusNotFound)
 
 		if !isPBQuirk {
-			fmt.Printf("\n--- FAILURE BODY ---\n%s\n--------------------\n", resp.JSON().Raw())
+			c.t.Logf("\n--- FAILURE BODY ---\n%s\n--------------------\n", resp.JSON().Raw())
 		}
 	}
 

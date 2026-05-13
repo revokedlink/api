@@ -38,6 +38,7 @@ func TestUserManagement_Refactored(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
+			api := api.T(t)
 			var req *httpexpect.Request
 
 			switch tc.method {
@@ -49,7 +50,7 @@ func TestUserManagement_Refactored(t *testing.T) {
 				req = api.Create(util.Coll.Users, tokenA, tc.body)
 			}
 
-			req.Expect().Status(tc.expectedStatus)
+			api.AssertStatus(req, tc.expectedStatus)
 		})
 	}
 }

@@ -19,6 +19,7 @@ func TestUserLifecycle_Refactored(t *testing.T) {
 	pass := "password12345"
 
 	t.Run("create user and authenticate", func(t *testing.T) {
+		api := api.T(t)
 		res := api.Create(util.Coll.Users, "", map[string]any{
 			"email":           email,
 			"password":        pass,
@@ -36,6 +37,7 @@ func TestUserLifecycle_Refactored(t *testing.T) {
 	})
 
 	t.Run("get personal workspace", func(t *testing.T) {
+		api := api.T(t)
 		res := api.List(util.Coll.Workspaces, token).
 			Expect().Status(http.StatusOK).JSON().Object()
 
@@ -47,6 +49,7 @@ func TestUserLifecycle_Refactored(t *testing.T) {
 	})
 
 	t.Run("reject second personal workspace", func(t *testing.T) {
+		api := api.T(t)
 		resp := api.Create(util.Coll.Workspaces, token, map[string]any{
 			"name": "Second Personal",
 			"type": util.TypePersonal,
@@ -67,6 +70,7 @@ func TestUserLifecycle_Refactored(t *testing.T) {
 		{"create business workspace 3", "b-3"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
+			api := api.T(t)
 			api.Create(util.Coll.Workspaces, token, map[string]any{
 				"name": "Business",
 				"type": util.TypeBusiness,
@@ -76,6 +80,7 @@ func TestUserLifecycle_Refactored(t *testing.T) {
 	}
 
 	t.Run("reject 4th business workspace", func(t *testing.T) {
+		api := api.T(t)
 		resp := api.Create(util.Coll.Workspaces, token, map[string]any{
 			"name": "B4",
 			"type": util.TypeBusiness,
@@ -88,6 +93,7 @@ func TestUserLifecycle_Refactored(t *testing.T) {
 	})
 
 	t.Run("delete personal workspace and verify user context", func(t *testing.T) {
+		api := api.T(t)
 		api.Delete(util.Coll.Workspaces, personalWorkspaceID, token).
 			Expect().Status(http.StatusNoContent)
 
@@ -98,6 +104,7 @@ func TestUserLifecycle_Refactored(t *testing.T) {
 	})
 
 	t.Run("delete user completely", func(t *testing.T) {
+		api := api.T(t)
 		api.Delete(util.Coll.Users, userID, token).
 			Expect().Status(http.StatusNoContent)
 

@@ -21,6 +21,7 @@ func TestWorkspaceAdvanced_SideEffects_Refactored(t *testing.T) {
 	var workspaceID string
 
 	t.Run("Setup: User A creates a business workspace and User B is added", func(t *testing.T) {
+		api := api.T(t)
 		// 1. User A creates a business workspace
 		ws := api.Create(util.Coll.Workspaces, userA_Token, map[string]any{
 			"name": "Shared Business",
@@ -44,6 +45,7 @@ func TestWorkspaceAdvanced_SideEffects_Refactored(t *testing.T) {
 	})
 
 	t.Run("Security: Admin cannot add users to a workspace that is not their active context", func(t *testing.T) {
+		api := api.T(t)
 		// 1. User A creates a SECOND business workspace
 		ws := api.Create(util.Coll.Workspaces, userA_Token, map[string]any{
 			"name": "User A Private Workspace",
@@ -67,6 +69,7 @@ func TestWorkspaceAdvanced_SideEffects_Refactored(t *testing.T) {
 	})
 
 	t.Run("Security: Regular member cannot delete or rename workspace", func(t *testing.T) {
+		api := api.T(t)
 		// 1. User B switches to the shared workspace as a 'member'
 		api.Update(util.Coll.Users, userB_ID, userB_Token, map[string]any{
 			"activeWorkspace": workspaceID,
@@ -84,6 +87,7 @@ func TestWorkspaceAdvanced_SideEffects_Refactored(t *testing.T) {
 	})
 
 	t.Run("Security: User cannot elevate their own role to admin in a workspace they only have member access to", func(t *testing.T) {
+		api := api.T(t)
 		// User B tries to set themselves as 'admin' for the shared workspace
 		api.Update(util.Coll.Users, userB_ID, userB_Token, map[string]any{
 			"activeWorkspace": workspaceID,
@@ -92,6 +96,7 @@ func TestWorkspaceAdvanced_SideEffects_Refactored(t *testing.T) {
 	})
 
 	t.Run("Side Effect: Workspace deletion clears context for all members", func(t *testing.T) {
+		api := api.T(t)
 		// 1. Ensure User B is active in the shared workspace as 'member'
 		api.Update(util.Coll.Users, userB_ID, userB_Token, map[string]any{
 			"activeWorkspace": workspaceID,

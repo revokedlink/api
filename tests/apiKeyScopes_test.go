@@ -74,6 +74,7 @@ func TestApiKeyScopes_Permissions(t *testing.T) {
 	api := testutils.NewPBClient(t, baseURL)
 
 	t.Run("User A creates document successfully", func(t *testing.T) {
+		api := api.T(t)
 		res := api.AssertStatus(api.Create("documents", apiKeyAToken, map[string]any{
 			"workspace": wsA.Id,
 			"title":     "Doc from A",
@@ -84,6 +85,7 @@ func TestApiKeyScopes_Permissions(t *testing.T) {
 	})
 
 	t.Run("User B fails to create document (missing scope)", func(t *testing.T) {
+		api := api.T(t)
 		api.AssertStatus(api.Create("documents", apiKeyBToken, map[string]any{
 			"workspace": wsB.Id,
 			"title":     "Doc from B",
@@ -91,6 +93,7 @@ func TestApiKeyScopes_Permissions(t *testing.T) {
 		}), http.StatusBadRequest)
 	})
 	t.Run("User A fails to create document in Workspace B (workspace mismatch)", func(t *testing.T) {
+		api := api.T(t)
 		api.AssertStatus(api.Create("documents", apiKeyAToken, map[string]any{
 			"workspace": wsB.Id,
 			"title":     "Doc from A in B",

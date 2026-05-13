@@ -19,6 +19,7 @@ func TestApiKeySecurity_Rigorous_Refactored(t *testing.T) {
 	var workspaceID string
 
 	t.Run("Setup: Admin creates a business workspace", func(t *testing.T) {
+		api := api.T(t)
 		slug := fmt.Sprintf("admin-workspace-%d", time.Now().UnixNano())
 
 		// Create Workspace
@@ -56,6 +57,7 @@ func TestApiKeySecurity_Rigorous_Refactored(t *testing.T) {
 	})
 
 	t.Run("Security: Admin can create an API Key for themselves", func(t *testing.T) {
+		api := api.T(t)
 		ts := time.Now().UnixNano()
 		api.AssertStatus(api.Create(util.Coll.ApiKeys, userA_Token, map[string]any{
 			"username":        fmt.Sprintf("admin-key-%d", ts),
@@ -70,6 +72,7 @@ func TestApiKeySecurity_Rigorous_Refactored(t *testing.T) {
 	})
 
 	t.Run("Security: Regular member cannot create an API Key", func(t *testing.T) {
+		api := api.T(t)
 		ts := time.Now().UnixNano()
 		api.AssertStatus(api.Create(util.Coll.ApiKeys, userB_Token, map[string]any{
 			"username":        fmt.Sprintf("member-key-%d", ts),
@@ -84,6 +87,7 @@ func TestApiKeySecurity_Rigorous_Refactored(t *testing.T) {
 	})
 
 	t.Run("Security: Admin cannot create an API Key for another user (SelfOnly check)", func(t *testing.T) {
+		api := api.T(t)
 		ts := time.Now().UnixNano()
 		api.AssertStatus(api.Create(util.Coll.ApiKeys, userA_Token, map[string]any{
 			"username":        fmt.Sprintf("spoofed-key-%d", ts),
@@ -98,6 +102,7 @@ func TestApiKeySecurity_Rigorous_Refactored(t *testing.T) {
 	})
 
 	t.Run("Security: API Key cannot create another API Key (Scope-less check)", func(t *testing.T) {
+		api := api.T(t)
 		ts := time.Now().UnixNano()
 		apiKeyToken := fmt.Sprintf("initial-api-key-for-test-%d", ts)
 
@@ -127,6 +132,7 @@ func TestApiKeySecurity_Rigorous_Refactored(t *testing.T) {
 	})
 
 	t.Run("Security: API Key is immutable (No Updates)", func(t *testing.T) {
+		api := api.T(t)
 		ts := time.Now().UnixNano()
 		token := fmt.Sprintf("immutable-test-token-%d", ts)
 
@@ -155,6 +161,7 @@ func TestApiKeySecurity_Rigorous_Refactored(t *testing.T) {
 	})
 
 	t.Run("Security: API Key cannot be deleted by anyone except the owner", func(t *testing.T) {
+		api := api.T(t)
 		ts := time.Now().UnixNano()
 
 		res := api.Create(util.Coll.ApiKeys, userA_Token, map[string]any{
@@ -175,6 +182,7 @@ func TestApiKeySecurity_Rigorous_Refactored(t *testing.T) {
 	})
 
 	t.Run("Integrity: Cannot create an API Key with an invalid scope", func(t *testing.T) {
+		api := api.T(t)
 		ts := time.Now().UnixNano()
 		api.AssertStatus(api.Create(util.Coll.ApiKeys, userA_Token, map[string]any{
 			"username":        fmt.Sprintf("invalid-scope-%d", ts),
@@ -189,6 +197,7 @@ func TestApiKeySecurity_Rigorous_Refactored(t *testing.T) {
 	})
 
 	t.Run("Integrity: Cannot create an API Key with duplicate scopes", func(t *testing.T) {
+		api := api.T(t)
 		ts := time.Now().UnixNano()
 		api.AssertStatus(api.Create(util.Coll.ApiKeys, userA_Token, map[string]any{
 			"username":        fmt.Sprintf("duplicate-scope-%d", ts),
