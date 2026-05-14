@@ -7,6 +7,7 @@ type collectionSchema struct {
 	ApiKeys          string
 	Documents        string
 	Records          string
+	AuditLogs        string
 }
 
 type recordFields struct {
@@ -33,6 +34,10 @@ type documentFields struct {
 	Workspace, User, Title, Content, Created, Updated string
 }
 
+type auditLogFields struct {
+	User, Action, Collection, RecordId, OldData, NewData, Ip, UserAgent, Workspace string
+}
+
 var Coll = collectionSchema{
 	Workspaces:       "workspaces",
 	WorkspaceMembers: "workspaceMembers",
@@ -40,6 +45,7 @@ var Coll = collectionSchema{
 	ApiKeys:          "apiKeys",
 	Documents:        "documents",
 	Records:          "records",
+	AuditLogs:        "auditLogs",
 }
 
 var Fields = struct {
@@ -49,6 +55,7 @@ var Fields = struct {
 	ApiKey          apiKeyFields
 	Record          recordFields
 	Document        documentFields
+	AuditLog        auditLogFields
 }{
 	Workspace: workspaceFields{
 		Name:    "name",
@@ -98,5 +105,16 @@ var Fields = struct {
 		User:      "user",
 		Created:   "created",
 		Updated:   "updated",
+	},
+	AuditLog: auditLogFields{
+		User:       "user",
+		Action:     "action",
+		Collection: "collection",
+		RecordId:   "recordId",
+		OldData:    "oldData",
+		NewData:    "newData",
+		Ip:         "ip",
+		UserAgent:  "userAgent",
+		Workspace:  "workspace",
 	},
 }

@@ -26,6 +26,13 @@ func main() {
 		hooks.BindCreateSuperuserAccount(app, adminEmail, adminPass)
 	}
 
+	userEmail := os.Getenv("USER_EMAIL")
+	userPass := os.Getenv("USER_PASSWORD")
+
+	if userEmail != "" && userPass != "" {
+		hooks.BindCreateUserAccount(app, userEmail, userPass)
+	}
+
 	// Run migrations
 	migratecmd.MustRegister(app, app.RootCmd, migratecmd.Config{
 		Automigrate: true,

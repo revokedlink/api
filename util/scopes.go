@@ -23,6 +23,10 @@ const (
 )
 
 var AllScopes = []string{
+	ScopeRecordRead,
+	ScopeRecordCreate,
+	ScopeRecordUpdate,
+	ScopeRecordDelete,
 	ScopeDocumentsRead,
 	ScopeDocumentsCreate,
 	ScopeDocumentsUpdate,
