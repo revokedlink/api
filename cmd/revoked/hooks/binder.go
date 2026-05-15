@@ -11,6 +11,7 @@ func BindHooksAndRoutes(app core.App) {
 	BindWorkspacesHooks(app)
 	BindWorkspaceMembersHooks(app)
 	BindApiKeyHooks(app)
+	BindApiKeyAuthMiddleware(app)
 	RegisterTenancyHooks(app)
 	BindAuditLogHooks(app)
 	routes.HealthzRoute(app)
